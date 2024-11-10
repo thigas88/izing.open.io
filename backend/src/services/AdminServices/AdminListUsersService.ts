@@ -31,7 +31,7 @@ const AdminListUsersService = async ({
       { email: { [Op.like]: `%${searchParam.toLowerCase()}%` } }
     ]
   };
-  const limit = 40;
+  const limit = 50;
   const offset = limit * (+pageNumber - 1);
 
   const { count, rows: users } = await User.findAndCountAll({

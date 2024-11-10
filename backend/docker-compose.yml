@@ -1,4 +1,5 @@
-version: "3"
+networks:
+  izing:
 
 services:
   redis:
@@ -14,6 +15,8 @@ services:
       - ./.env
     volumes:
       - ".data/redis:/data"
+    networks:
+      - izing
 
   # database containers, one for each db
   pg_fixPermissions:
@@ -22,6 +25,8 @@ services:
     command: chown -R 1001:1001 /bitnami/postgresql
     volumes:
       - ".data/pg:/bitnami/postgresql/data"
+    networks:
+      - izing
 
   postgres:
     image: "bitnami/postgresql:14"
@@ -37,12 +42,16 @@ services:
       - "5432:5432"
     depends_on:
       - pg_fixPermissions
+    networks:
+      - izing
 
   rabbitmq:
     image: rabbitmq:3-management
     hostname: rabbitmq
     container_name: "rabbitmq"
     restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - ./.env
     volumes:
@@ -51,11 +60,14 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    networks:
+      - izing
 
   api:
     build:
       context: .
       dockerfile: ./Dockerfile
+      target: development-stage
     restart: always
     container_name: "api"
     env_file:
@@ -70,6 +82,9 @@ services:
       - rabbitmq
     ports:
       - "3100:3100"
+      - "3000:3000"
     volumes:
       - .data/.wwebjs_auth:/app/.wwebjs_auth
       - .data/medias:/app/public
+    networks:
+      - izing

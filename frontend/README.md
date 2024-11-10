@@ -12,6 +12,14 @@ npm install
 quasar dev
 ```
 
+Fix for node new version (>16)
+
+Add script for npm
+```
+"dev": "SET NODE_OPTIONS=--openssl-legacy-provider && quasar dev",
+"build": "SET NODE_OPTIONS=--openssl-legacy-provider && quasar build"
+```
+
 ### Lint the files
 ```bash
 npm run lint
